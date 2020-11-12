@@ -1,7 +1,11 @@
+/* React imports */
 import React from "react";
 
+/* Components imports */
+import MainHeader from "../../components/MainHeader";
+
 const Home: React.FC = () => {
-  return <div>Hello World!</div>;
+  return <MainHeader />;
 };
 
 export default Home;
