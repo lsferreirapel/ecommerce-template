@@ -15,7 +15,7 @@ export default createGlobalStyle`
   }
 
   /* CSS RESET */
-  * {
+  *, ul, li {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -24,20 +24,24 @@ export default createGlobalStyle`
     color: var(--color-gray-light);
     opacity: 1; /* Firefox */
   }
-  button {
+  button, input {
     background: none;
     border: none;
   }
+  li, ul {
+    list-style: none;
+  }
 
   /* Default font style */
-  body, input, button {
+  body, input, button, a {
     font-family: 'Montserrat', sans-serif;
     font-weight: 400; /* Regular */
     color: var(--color-gray-dark);
+    text-decoration: none;
   }
 `;
 
 export const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 `;

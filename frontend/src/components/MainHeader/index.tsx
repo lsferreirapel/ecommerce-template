@@ -1,50 +1,29 @@
-/* React import */
+/* React imports */
 import React from "react";
 
-/* My imports */
-import { FiSearch, FiUser, FiShoppingBag, FiHeart } from "react-icons/fi";
+/* Sub componets */
+import InformationAlert from "./components/InformationAlert";
+import Navigation from "./components/Navigation";
+import Content from "./components/Content";
 
-/* Sub componets import */
+/* Styles */
+import Container from "./styles";
 
-/* Styles Import */
-import { Container } from "../../styles/global";
-import { Info, Content, Navigation } from "./styles";
-
-/* Assets Import */
+/* Assets */
 import InfoImage from "../../assets/images/header-info.png"; // Just to test
-import HeaderLogo from "../../assets/images/logos/srt-emily-logo.png"; // Just to test
 
-const MainHeader: React.FC = () => (
+/** Interface to setup the MainHeader properties * */
+interface HeaderProps {
+  data: {
+    categories: string[];
+  };
+}
+
+const MainHeader = ({ data }: HeaderProps): JSX.Element => (
   <Container>
-    <Info color="#000000">
-      <img src={InfoImage} alt="Header Information" />
-    </Info>
-    <Content>
-      <img src={HeaderLogo} alt="Logo" />
-      <form className="search">
-        <input type="text" placeholder="O que você procura?" />
-        <button type="button">
-          <FiSearch size={20} color="#FFFFFF" />
-        </button>
-      </form>
-      {/* <Search /> */}
-      <div className="buttons">
-        <button type="button" className="login">
-          <FiUser size={24} color="#5B5B5F" />
-          Entrar
-        </button>
-        <button type="button">
-          <FiShoppingBag size={24} color="#CC757A" />
-        </button>
-        <button type="button">
-          <FiHeart size={24} color="#5B5B5F" />
-        </button>
-        {/* <AccessLogin /> */}
-        {/* <AccessMiniCart /> */}
-        {/* <AccessFavoriteItems /> */}
-      </div>
-    </Content>
-    <Navigation />
+    <InformationAlert backRGBColor="#000000" informationImg={InfoImage} />
+    <Content />
+    <Navigation categories={data.categories} />
   </Container>
 );
 
