@@ -1,12 +1,9 @@
 import { FilterableField } from '@nestjs-query/query-graphql';
-import { ID, ObjectType } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
 import { BaseDTO } from 'src/modules/bases/dto/base.dto';
 
-@ObjectType('User')
-export class UserDTO extends BaseDTO {
-  @FilterableField()
-  email: string;
-
+@ObjectType('Brand')
+export class BrandDTO extends BaseDTO {
   @FilterableField()
   name: string;
 }
