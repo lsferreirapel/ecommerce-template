@@ -1,13 +1,15 @@
-import { Module } from '@nestjs/common';
 import {
   NestjsQueryGraphQLModule,
-  PagingStrategies,
+  PagingStrategies
 } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
-import { Product } from './entities/product.entity';
-import { ProductDTO } from './dto/product.dto';
+import { Module } from '@nestjs/common';
+import { Roles } from 'src/common/decorators/auth.roles.decorator';
+import { RolesEnum } from 'src/common/enums/roles.enum';
 import { CreateProductInput } from './dto/create-product.input';
+import { ProductDTO } from './dto/product.dto';
 import { UpdateProductInput } from './dto/update-product.input';
+import { Product } from './entities/product.entity';
 
 @Module({
   imports: [
@@ -21,6 +23,13 @@ import { UpdateProductInput } from './dto/update-product.input';
           UpdateDTOClass: UpdateProductInput,
           enableTotalCount: true,
           pagingStrategy: PagingStrategies.OFFSET,
+          decorators: [Roles(RolesEnum.ADMIN, RolesEnum.SUPER_ADMIN)],
+          create: {
+            many: { disabled: true }
+          },
+          update: {
+            many: { disabled: true }
+          }
         },
       ],
     }),
