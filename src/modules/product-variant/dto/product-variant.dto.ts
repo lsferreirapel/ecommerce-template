@@ -8,8 +8,8 @@ import { ColorDTO } from 'src/modules/colors/dto/color.dto';
 import { ProductDTO } from 'src/modules/products/dto/product.dto';
 
 @ObjectType('ProductVariant')
-@FilterableRelation('color', () => ColorDTO, { nullable: true })
-@FilterableRelation('product', () => ProductDTO, { nullable: true })
+@FilterableRelation('color', () => ColorDTO)
+@FilterableRelation('product', () => ProductDTO)
 export class ProductVariantDTO extends BaseDTO {
   @FilterableField()
   price: number;

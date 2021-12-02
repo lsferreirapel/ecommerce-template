@@ -9,7 +9,6 @@ export class ProductVariant extends BaseEntity {
   price: number;
 
   @ManyToOne(() => Color, (color) => color.productVariants, {
-    nullable: true,
     cascade: true,
     eager: true,
   })
