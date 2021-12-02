@@ -4,12 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './modules/users/users.module';
-import { ProductsModule } from './modules/products/products.module';
-import { CategoriesModule } from './modules/categories/categories.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { ColorsModule } from './modules/colors/colors.module';
 import { ProductVariantModule } from './modules/product-variant/product-variant.module';
+import { ProductsModule } from './modules/products/products.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { ProductVariantModule } from './modules/product-variant/product-variant.
     BrandsModule,
     ColorsModule,
     ProductVariantModule,
+    AuthModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
