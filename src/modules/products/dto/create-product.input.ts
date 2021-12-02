@@ -1,6 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEnum, IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/gender.enum';
+// import { UpdateCategoryInput } from 'src/modules/categories/dto/update-category.input';
+// import { UpdateProductVariantInput } from 'src/modules/product-variant/dto/update-product-variant.input';
 
 @InputType()
 export class CreateProductInput {
@@ -11,4 +13,10 @@ export class CreateProductInput {
   @IsEnum(GenderEnum)
   @Field()
   gender: GenderEnum;
+
+  // @Field(() => UpdateProductVariantInput, { nullable: true })
+  // productVariants?: UpdateProductVariantInput[];
+
+  // @Field(() => UpdateCategoryInput, { nullable: true })
+  // categories?: UpdateCategoryInput[];
 }

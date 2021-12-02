@@ -26,6 +26,14 @@ input AddProductVariantsToProductInput {
   relationIds: [ID!]!
 }
 
+input AddProductsToBrandInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
 input AddProductsToCategoryInput {
   """The id of the record."""
   id: ID!
@@ -34,11 +42,39 @@ input AddProductsToCategoryInput {
   relationIds: [ID!]!
 }
 
+input AddRolesToUserInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input AuthInput {
+  email: String!
+  password: String!
+}
+
+type AuthType {
+  token: String!
+  user: User!
+}
+
 type Brand {
   createdAt: DateTime!
   deletedAt: DateTime
   id: ID!
   name: String!
+  products(
+    """Specify to filter the records returned."""
+    filter: ProductFilter = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ProductSort!] = []
+  ): BrandProductsConnection
   updatedAt: DateTime!
 }
 
@@ -94,6 +130,18 @@ input BrandFilter {
   id: IDFilterComparison
   name: StringFieldComparison
   or: [BrandFilter!]
+  products: BrandFilterProductFilter
+  updatedAt: DateFieldComparison
+}
+
+input BrandFilterProductFilter {
+  and: [BrandFilterProductFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  gender: GenderEnumFilterComparison
+  id: IDFilterComparison
+  name: StringFieldComparison
+  or: [BrandFilterProductFilter!]
   updatedAt: DateFieldComparison
 }
 
@@ -113,6 +161,17 @@ type BrandMinAggregate {
   updatedAt: DateTime
 }
 
+type BrandProductsConnection {
+  """Array of nodes."""
+  nodes: [Product!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
 input BrandSort {
   direction: SortDirection!
   field: BrandSortFields!
@@ -125,16 +184,6 @@ enum BrandSortFields {
   id
   name
   updatedAt
-}
-
-input BrandUpdateFilter {
-  and: [BrandUpdateFilter!]
-  createdAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  id: IDFilterComparison
-  name: StringFieldComparison
-  or: [BrandUpdateFilter!]
-  updatedAt: DateFieldComparison
 }
 
 type Category {
@@ -219,7 +268,6 @@ input CategoryFilter {
 
 input CategoryFilterProductFilter {
   and: [CategoryFilterProductFilter!]
-  code: StringFieldComparison
   createdAt: DateFieldComparison
   deletedAt: DateFieldComparison
   gender: GenderEnumFilterComparison
@@ -271,17 +319,6 @@ enum CategorySortFields {
   id
   name
   updatedAt
-}
-
-input CategoryUpdateFilter {
-  and: [CategoryUpdateFilter!]
-  createdAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  gender: GenderEnumFilterComparison
-  id: IDFilterComparison
-  name: StringFieldComparison
-  or: [CategoryUpdateFilter!]
-  updatedAt: DateFieldComparison
 }
 
 type Color {
@@ -418,17 +455,6 @@ enum ColorSortFields {
   updatedAt
 }
 
-input ColorUpdateFilter {
-  HEX: StringFieldComparison
-  and: [ColorUpdateFilter!]
-  createdAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  id: IDFilterComparison
-  name: StringFieldComparison
-  or: [ColorUpdateFilter!]
-  updatedAt: DateFieldComparison
-}
-
 input CreateBrandInput {
   name: String!
 }
@@ -443,34 +469,14 @@ input CreateColorInput {
   name: String!
 }
 
-input CreateManyBrandsInput {
-  """Array of records to create"""
-  brands: [CreateBrandInput!]!
-}
-
-input CreateManyCategoriesInput {
-  """Array of records to create"""
-  categories: [CreateCategoryInput!]!
-}
-
-input CreateManyColorsInput {
-  """Array of records to create"""
-  colors: [CreateColorInput!]!
-}
-
 input CreateManyProductVariantsInput {
   """Array of records to create"""
   productVariants: [CreateProductVariantInput!]!
 }
 
-input CreateManyProductsInput {
+input CreateManyRolesInput {
   """Array of records to create"""
-  products: [CreateProductInput!]!
-}
-
-input CreateManyUsersInput {
-  """Array of records to create"""
-  users: [CreateUserInput!]!
+  roles: [CreateRoleInput!]!
 }
 
 input CreateOneBrandInput {
@@ -498,6 +504,11 @@ input CreateOneProductVariantInput {
   productVariant: CreateProductVariantInput!
 }
 
+input CreateOneRoleInput {
+  """The record to create"""
+  role: CreateRoleInput!
+}
+
 input CreateOneUserInput {
   """The record to create"""
   user: CreateUserInput!
@@ -509,12 +520,20 @@ input CreateProductInput {
 }
 
 input CreateProductVariantInput {
+  color: UpdateColorInput!
   price: Float!
+  product: UpdateProductInput!
+}
+
+input CreateRoleInput {
+  name: RolesEnum!
 }
 
 input CreateUserInput {
   email: String!
   name: String!
+  password: String!
+  roles: [CreateRoleInput!]!
 }
 
 input DateFieldComparison {
@@ -572,6 +591,11 @@ type DeleteManyResponse {
   deletedCount: Int!
 }
 
+input DeleteManyRolesInput {
+  """Filter to find records to delete"""
+  filter: RoleDeleteFilter!
+}
+
 input DeleteManyUsersInput {
   """Filter to find records to delete"""
   filter: UserDeleteFilter!
@@ -598,6 +622,11 @@ input DeleteOneProductInput {
 }
 
 input DeleteOneProductVariantInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneRoleInput {
   """The id of the record to delete."""
   id: ID!
 }
@@ -651,49 +680,51 @@ type Mutation {
   addCategoriesToProduct(input: AddCategoriesToProductInput!): Product!
   addProductVariantsToColor(input: AddProductVariantsToColorInput!): Color!
   addProductVariantsToProduct(input: AddProductVariantsToProductInput!): Product!
+  addProductsToBrand(input: AddProductsToBrandInput!): Brand!
   addProductsToCategory(input: AddProductsToCategoryInput!): Category!
-  createManyBrands(input: CreateManyBrandsInput!): [Brand!]!
-  createManyCategories(input: CreateManyCategoriesInput!): [Category!]!
-  createManyColors(input: CreateManyColorsInput!): [Color!]!
+  addRolesToUser(input: AddRolesToUserInput!): User!
   createManyProductVariants(input: CreateManyProductVariantsInput!): [ProductVariant!]!
-  createManyProducts(input: CreateManyProductsInput!): [Product!]!
-  createManyUsers(input: CreateManyUsersInput!): [User!]!
+  createManyRoles(input: CreateManyRolesInput!): [Role!]!
   createOneBrand(input: CreateOneBrandInput!): Brand!
   createOneCategory(input: CreateOneCategoryInput!): Category!
   createOneColor(input: CreateOneColorInput!): Color!
   createOneProduct(input: CreateOneProductInput!): Product!
   createOneProductVariant(input: CreateOneProductVariantInput!): ProductVariant!
+  createOneRole(input: CreateOneRoleInput!): Role!
   createOneUser(input: CreateOneUserInput!): User!
   deleteManyBrands(input: DeleteManyBrandsInput!): DeleteManyResponse!
   deleteManyCategories(input: DeleteManyCategoriesInput!): DeleteManyResponse!
   deleteManyColors(input: DeleteManyColorsInput!): DeleteManyResponse!
   deleteManyProductVariants(input: DeleteManyProductVariantsInput!): DeleteManyResponse!
   deleteManyProducts(input: DeleteManyProductsInput!): DeleteManyResponse!
+  deleteManyRoles(input: DeleteManyRolesInput!): DeleteManyResponse!
   deleteManyUsers(input: DeleteManyUsersInput!): DeleteManyResponse!
   deleteOneBrand(input: DeleteOneBrandInput!): BrandDeleteResponse!
   deleteOneCategory(input: DeleteOneCategoryInput!): CategoryDeleteResponse!
   deleteOneColor(input: DeleteOneColorInput!): ColorDeleteResponse!
   deleteOneProduct(input: DeleteOneProductInput!): ProductDeleteResponse!
   deleteOneProductVariant(input: DeleteOneProductVariantInput!): ProductVariantDeleteResponse!
+  deleteOneRole(input: DeleteOneRoleInput!): RoleDeleteResponse!
   deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
+  login(data: AuthInput!): AuthType!
+  removeBrandFromProduct(input: RemoveBrandFromProductInput!): Product!
   removeCategoriesFromProduct(input: RemoveCategoriesFromProductInput!): Product!
   removeColorFromProductVariant(input: RemoveColorFromProductVariantInput!): ProductVariant!
   removeProductFromProductVariant(input: RemoveProductFromProductVariantInput!): ProductVariant!
   removeProductVariantsFromColor(input: RemoveProductVariantsFromColorInput!): Color!
   removeProductVariantsFromProduct(input: RemoveProductVariantsFromProductInput!): Product!
+  removeProductsFromBrand(input: RemoveProductsFromBrandInput!): Brand!
   removeProductsFromCategory(input: RemoveProductsFromCategoryInput!): Category!
+  removeRolesFromUser(input: RemoveRolesFromUserInput!): User!
+  setBrandOnProduct(input: SetBrandOnProductInput!): Product!
   setCategoriesOnProduct(input: SetCategoriesOnProductInput!): Product!
   setColorOnProductVariant(input: SetColorOnProductVariantInput!): ProductVariant!
   setProductOnProductVariant(input: SetProductOnProductVariantInput!): ProductVariant!
   setProductVariantsOnColor(input: SetProductVariantsOnColorInput!): Color!
   setProductVariantsOnProduct(input: SetProductVariantsOnProductInput!): Product!
+  setProductsOnBrand(input: SetProductsOnBrandInput!): Brand!
   setProductsOnCategory(input: SetProductsOnCategoryInput!): Category!
-  updateManyBrands(input: UpdateManyBrandsInput!): UpdateManyResponse!
-  updateManyCategories(input: UpdateManyCategoriesInput!): UpdateManyResponse!
-  updateManyColors(input: UpdateManyColorsInput!): UpdateManyResponse!
-  updateManyProductVariants(input: UpdateManyProductVariantsInput!): UpdateManyResponse!
-  updateManyProducts(input: UpdateManyProductsInput!): UpdateManyResponse!
-  updateManyUsers(input: UpdateManyUsersInput!): UpdateManyResponse!
+  setRolesOnUser(input: SetRolesOnUserInput!): User!
   updateOneBrand(input: UpdateOneBrandInput!): Brand!
   updateOneCategory(input: UpdateOneCategoryInput!): Category!
   updateOneColor(input: UpdateOneColorInput!): Color!
@@ -739,6 +770,7 @@ input OffsetPaging {
 }
 
 type Product {
+  brand: Brand!
   categories(
     """Specify to filter the records returned."""
     filter: CategoryFilter = {}
@@ -749,7 +781,6 @@ type Product {
     """Specify to sort results."""
     sorting: [CategorySort!] = []
   ): ProductCategoriesConnection
-  code: String
   createdAt: DateTime!
   deletedAt: DateTime
   gender: GenderEnum!
@@ -769,7 +800,6 @@ type Product {
 }
 
 type ProductAggregateGroupBy {
-  code: String
   createdAt: DateTime
   deletedAt: DateTime
   gender: GenderEnum
@@ -801,7 +831,6 @@ type ProductConnection {
 }
 
 type ProductCountAggregate {
-  code: Int
   createdAt: Int
   deletedAt: Int
   gender: Int
@@ -812,7 +841,6 @@ type ProductCountAggregate {
 
 input ProductDeleteFilter {
   and: [ProductDeleteFilter!]
-  code: StringFieldComparison
   createdAt: DateFieldComparison
   deletedAt: DateFieldComparison
   gender: GenderEnumFilterComparison
@@ -823,7 +851,6 @@ input ProductDeleteFilter {
 }
 
 type ProductDeleteResponse {
-  code: String
   createdAt: DateTime
   deletedAt: DateTime
   gender: GenderEnum
@@ -834,8 +861,8 @@ type ProductDeleteResponse {
 
 input ProductFilter {
   and: [ProductFilter!]
+  brand: ProductFilterBrandFilter
   categories: ProductFilterCategoryFilter
-  code: StringFieldComparison
   createdAt: DateFieldComparison
   deletedAt: DateFieldComparison
   gender: GenderEnumFilterComparison
@@ -843,6 +870,16 @@ input ProductFilter {
   name: StringFieldComparison
   or: [ProductFilter!]
   productVariants: ProductFilterProductVariantFilter
+  updatedAt: DateFieldComparison
+}
+
+input ProductFilterBrandFilter {
+  and: [ProductFilterBrandFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: IDFilterComparison
+  name: StringFieldComparison
+  or: [ProductFilterBrandFilter!]
   updatedAt: DateFieldComparison
 }
 
@@ -868,7 +905,6 @@ input ProductFilterProductVariantFilter {
 }
 
 type ProductMaxAggregate {
-  code: String
   createdAt: DateTime
   deletedAt: DateTime
   gender: GenderEnum
@@ -878,7 +914,6 @@ type ProductMaxAggregate {
 }
 
 type ProductMinAggregate {
-  code: String
   createdAt: DateTime
   deletedAt: DateTime
   gender: GenderEnum
@@ -905,7 +940,6 @@ input ProductSort {
 }
 
 enum ProductSortFields {
-  code
   createdAt
   deletedAt
   gender
@@ -914,25 +948,13 @@ enum ProductSortFields {
   updatedAt
 }
 
-input ProductUpdateFilter {
-  and: [ProductUpdateFilter!]
-  code: StringFieldComparison
-  createdAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  gender: GenderEnumFilterComparison
-  id: IDFilterComparison
-  name: StringFieldComparison
-  or: [ProductUpdateFilter!]
-  updatedAt: DateFieldComparison
-}
-
 type ProductVariant {
-  color: Color
+  color: Color!
   createdAt: DateTime!
   deletedAt: DateTime
   id: ID!
   price: Float!
-  product: Product
+  product: Product!
   updatedAt: DateTime!
 }
 
@@ -1010,7 +1032,6 @@ input ProductVariantFilterColorFilter {
 
 input ProductVariantFilterProductFilter {
   and: [ProductVariantFilterProductFilter!]
-  code: StringFieldComparison
   createdAt: DateFieldComparison
   deletedAt: DateFieldComparison
   gender: GenderEnumFilterComparison
@@ -1052,16 +1073,6 @@ enum ProductVariantSortFields {
 
 type ProductVariantSumAggregate {
   price: Float
-}
-
-input ProductVariantUpdateFilter {
-  and: [ProductVariantUpdateFilter!]
-  createdAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  id: IDFilterComparison
-  or: [ProductVariantUpdateFilter!]
-  price: NumberFieldComparison
-  updatedAt: DateFieldComparison
 }
 
 type Query {
@@ -1107,6 +1118,7 @@ type Query {
     """Specify to sort results."""
     sorting: [ColorSort!] = []
   ): ColorConnection!
+  isTokenValid(token: String!): TokenValidType!
   product(
     """The id of the record to find."""
     id: ID!
@@ -1135,6 +1147,17 @@ type Query {
     """Specify to sort results."""
     sorting: [ProductSort!] = []
   ): ProductConnection!
+  role(
+    """The id of the record to find."""
+    id: ID!
+  ): Role
+  roles(
+    """Specify to filter the records returned."""
+    filter: RoleFilter = {}
+
+    """Specify to sort results."""
+    sorting: [RoleSort!] = []
+  ): [Role!]!
   user(
     """The id of the record to find."""
     id: ID!
@@ -1149,6 +1172,14 @@ type Query {
     """Specify to sort results."""
     sorting: [UserSort!] = []
   ): UserConnection!
+}
+
+input RemoveBrandFromProductInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
 }
 
 input RemoveCategoriesFromProductInput {
@@ -1191,12 +1222,141 @@ input RemoveProductVariantsFromProductInput {
   relationIds: [ID!]!
 }
 
+input RemoveProductsFromBrandInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
 input RemoveProductsFromCategoryInput {
   """The id of the record."""
   id: ID!
 
   """The ids of the relations."""
   relationIds: [ID!]!
+}
+
+input RemoveRolesFromUserInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+type Role {
+  createdAt: DateTime!
+  deletedAt: DateTime
+  id: ID!
+  name: RolesEnum!
+  updatedAt: DateTime!
+}
+
+type RoleAggregateGroupBy {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
+  name: RolesEnum
+  updatedAt: DateTime
+}
+
+type RoleCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  id: Int
+  name: Int
+  updatedAt: Int
+}
+
+input RoleDeleteFilter {
+  and: [RoleDeleteFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: IDFilterComparison
+  name: RolesEnumFilterComparison
+  or: [RoleDeleteFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type RoleDeleteResponse {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
+  name: RolesEnum
+  updatedAt: DateTime
+}
+
+input RoleFilter {
+  and: [RoleFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: IDFilterComparison
+  name: RolesEnumFilterComparison
+  or: [RoleFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type RoleMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
+  name: RolesEnum
+  updatedAt: DateTime
+}
+
+type RoleMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
+  name: RolesEnum
+  updatedAt: DateTime
+}
+
+input RoleSort {
+  direction: SortDirection!
+  field: RoleSortFields!
+  nulls: SortNulls
+}
+
+enum RoleSortFields {
+  createdAt
+  deletedAt
+  id
+  name
+  updatedAt
+}
+
+enum RolesEnum {
+  ADMIN
+  SUPER_ADMIN
+  USER
+}
+
+input RolesEnumFilterComparison {
+  eq: RolesEnum
+  gt: RolesEnum
+  gte: RolesEnum
+  iLike: RolesEnum
+  in: [RolesEnum!]
+  is: Boolean
+  isNot: Boolean
+  like: RolesEnum
+  lt: RolesEnum
+  lte: RolesEnum
+  neq: RolesEnum
+  notILike: RolesEnum
+  notIn: [RolesEnum!]
+  notLike: RolesEnum
+}
+
+input SetBrandOnProductInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
 }
 
 input SetCategoriesOnProductInput {
@@ -1239,7 +1399,23 @@ input SetProductVariantsOnProductInput {
   relationIds: [ID!]!
 }
 
+input SetProductsOnBrandInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
 input SetProductsOnCategoryInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input SetRolesOnUserInput {
   """The id of the record."""
   id: ID!
 
@@ -1276,6 +1452,10 @@ input StringFieldComparison {
   notLike: String
 }
 
+type TokenValidType {
+  valid: Boolean!
+}
+
 input UpdateBrandInput {
   name: String
 }
@@ -1287,60 +1467,8 @@ input UpdateCategoryInput {
 
 input UpdateColorInput {
   HEX: String
+  id: ID
   name: String
-}
-
-input UpdateManyBrandsInput {
-  """Filter used to find fields to update"""
-  filter: BrandUpdateFilter!
-
-  """The update to apply to all records found using the filter"""
-  update: UpdateBrandInput!
-}
-
-input UpdateManyCategoriesInput {
-  """Filter used to find fields to update"""
-  filter: CategoryUpdateFilter!
-
-  """The update to apply to all records found using the filter"""
-  update: UpdateCategoryInput!
-}
-
-input UpdateManyColorsInput {
-  """Filter used to find fields to update"""
-  filter: ColorUpdateFilter!
-
-  """The update to apply to all records found using the filter"""
-  update: UpdateColorInput!
-}
-
-input UpdateManyProductVariantsInput {
-  """Filter used to find fields to update"""
-  filter: ProductVariantUpdateFilter!
-
-  """The update to apply to all records found using the filter"""
-  update: UpdateProductVariantInput!
-}
-
-input UpdateManyProductsInput {
-  """Filter used to find fields to update"""
-  filter: ProductUpdateFilter!
-
-  """The update to apply to all records found using the filter"""
-  update: UpdateProductInput!
-}
-
-type UpdateManyResponse {
-  """The number of records updated."""
-  updatedCount: Int!
-}
-
-input UpdateManyUsersInput {
-  """Filter used to find fields to update"""
-  filter: UserUpdateFilter!
-
-  """The update to apply to all records found using the filter"""
-  update: UpdateUserInput!
 }
 
 input UpdateOneBrandInput {
@@ -1393,16 +1521,22 @@ input UpdateOneUserInput {
 
 input UpdateProductInput {
   gender: String
+  id: ID
   name: String
 }
 
 input UpdateProductVariantInput {
+  color: UpdateColorInput
   price: Float
+  product: UpdateProductInput
 }
 
 input UpdateUserInput {
   email: String
+  id: ID
   name: String
+  password: String
+  roles: [CreateRoleInput!]
 }
 
 type User {
@@ -1411,6 +1545,13 @@ type User {
   email: String!
   id: ID!
   name: String!
+  roles(
+    """Specify to filter the records returned."""
+    filter: RoleFilter = {}
+
+    """Specify to sort results."""
+    sorting: [RoleSort!] = []
+  ): [Role!]
   updatedAt: DateTime!
 }
 
@@ -1471,6 +1612,17 @@ input UserFilter {
   id: IDFilterComparison
   name: StringFieldComparison
   or: [UserFilter!]
+  roles: UserFilterRoleFilter
+  updatedAt: DateFieldComparison
+}
+
+input UserFilterRoleFilter {
+  and: [UserFilterRoleFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: IDFilterComparison
+  name: RolesEnumFilterComparison
+  or: [UserFilterRoleFilter!]
   updatedAt: DateFieldComparison
 }
 
@@ -1505,15 +1657,4 @@ enum UserSortFields {
   id
   name
   updatedAt
-}
-
-input UserUpdateFilter {
-  and: [UserUpdateFilter!]
-  createdAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  email: StringFieldComparison
-  id: IDFilterComparison
-  name: StringFieldComparison
-  or: [UserUpdateFilter!]
-  updatedAt: DateFieldComparison
 }

@@ -1,16 +1,21 @@
 import { GenderEnum } from 'src/common/enums/gender.enum';
 import { BaseEntity } from 'src/modules/bases/entities/base.entity';
+import { Brand } from 'src/modules/brands/entities/brand.entity';
 import { Category } from 'src/modules/categories/entities/category.entity';
 import { ProductVariant } from 'src/modules/product-variant/entities/product-variant.entity';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany
+} from 'typeorm';
 
 @Entity()
 export class Product extends BaseEntity {
   @Column({ unique: true })
   name: string;
-
-  @Column({ unique: true, nullable: true })
-  code?: string;
 
   @Column({ name: 'gender', type: 'enum', enum: GenderEnum })
   gender: GenderEnum;
@@ -24,4 +29,7 @@ export class Product extends BaseEntity {
     cascade: true,
   })
   productVariants?: ProductVariant[];
+
+  @ManyToOne(() => Brand, (brand) => brand.products, { cascade: true })
+  brand: Brand;
 }

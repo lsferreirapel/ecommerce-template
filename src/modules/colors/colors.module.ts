@@ -1,13 +1,15 @@
-import { Module } from '@nestjs/common';
-import { Color } from './entities/color.entity';
 import {
   NestjsQueryGraphQLModule,
-  PagingStrategies,
+  PagingStrategies
 } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
+import { Module } from '@nestjs/common';
+import { Roles } from 'src/common/decorators/auth.roles.decorator';
+import { RolesEnum } from 'src/common/enums/roles.enum';
 import { ColorDTO } from './dto/color.dto';
 import { CreateColorInput } from './dto/create-color.input';
 import { UpdateColorInput } from './dto/update-color.input';
+import { Color } from './entities/color.entity';
 
 @Module({
   imports: [
@@ -21,6 +23,13 @@ import { UpdateColorInput } from './dto/update-color.input';
           UpdateDTOClass: UpdateColorInput,
           enableTotalCount: true,
           pagingStrategy: PagingStrategies.OFFSET,
+          decorators: [Roles(RolesEnum.ADMIN, RolesEnum.SUPER_ADMIN)],
+          create: {
+            many: { disabled: true }
+          },
+          update: {
+            many: { disabled: true }
+          }
         },
       ],
     }),
