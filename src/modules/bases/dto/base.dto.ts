@@ -4,13 +4,13 @@ import { ID, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class BaseDTO {
   @FilterableField(() => ID)
-  id: string;
+  id!: string;
 
   @FilterableField()
-  createdAt: Date;
+  createdAt!: Date;
 
   @FilterableField()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @FilterableField({ nullable: true })
   deletedAt?: Date;
