@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { CreateRoleInput } from 'src/modules/roles/dto/create-role.input';
 
 @InputType()
 export class CreateUserInput {
@@ -10,4 +11,12 @@ export class CreateUserInput {
   @IsString()
   @Field()
   name: string;
+
+  @IsNotEmpty()
+  @Field()
+  password?: string;
+
+  @IsNotEmpty()
+  @Field(() => [CreateRoleInput])
+  roles?: CreateRoleInput[];
 }

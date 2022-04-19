@@ -1,8 +1,8 @@
+import { CreateColorInput } from './create-color.input';
 import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
-import { CreateUserInput } from './create-user.input';
 
 @InputType()
-export class UpdateUserInput extends PartialType(CreateUserInput) {
+export class UpdateColorInput extends PartialType(CreateColorInput) {
   @Field(() => ID, { nullable: true })
   id?: string;
 }

@@ -6,27 +6,24 @@ import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 import { Module } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/auth.roles.decorator';
 import { RolesEnum } from 'src/common/enums/roles.enum';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
-import { UserDTO } from './dto/user.dto';
-import { User } from './entities/user.entity';
-import { UsersService } from './users.service';
+import { BrandDTO } from './dto/brand.dto';
+import { CreateBrandInput } from './dto/create-brand.input';
+import { UpdateBrandInput } from './dto/update-brand.input';
+import { Brand } from './entities/brand.entity';
 
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([User])],
-      services: [UsersService],
+      imports: [NestjsQueryTypeOrmModule.forFeature([Brand])],
       resolvers: [
         {
-          DTOClass: UserDTO,
-          EntityClass: User,
-          CreateDTOClass: CreateUserInput,
-          UpdateDTOClass: UpdateUserInput,
-          ServiceClass: UsersService,
+          DTOClass: BrandDTO,
+          EntityClass: Brand,
+          CreateDTOClass: CreateBrandInput,
+          UpdateDTOClass: UpdateBrandInput,
           enableTotalCount: true,
           pagingStrategy: PagingStrategies.OFFSET,
-          decorators: [Roles(RolesEnum.SUPER_ADMIN)],
+          decorators: [Roles(RolesEnum.ADMIN, RolesEnum.SUPER_ADMIN)],
           create: {
             many: { disabled: true }
           },
@@ -37,7 +34,6 @@ import { UsersService } from './users.service';
       ],
     }),
   ],
-  providers: [UsersService],
-  exports: [UsersService],
+  providers: [],
 })
-export class UsersModule {}
+export class BrandsModule {}
