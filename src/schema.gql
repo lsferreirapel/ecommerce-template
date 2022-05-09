@@ -1119,6 +1119,7 @@ type Query {
     sorting: [ColorSort!] = []
   ): ColorConnection!
   isTokenValid(token: String!): TokenValidType!
+  me: User!
   product(
     """The id of the record to find."""
     id: ID!

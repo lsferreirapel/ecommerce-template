@@ -1,4 +1,5 @@
 import { PasswordColumn } from 'src/common/decorators/password-column.decorator';
+import { TimestampTZColumn } from 'src/common/decorators/timestamptz.decorator';
 import { BaseEntity } from 'src/modules/bases/entities/base.entity';
 import { Role } from 'src/modules/roles/entities/role.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
@@ -6,10 +7,13 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 @Entity()
 export class User extends BaseEntity {
   @Column({ unique: true })
-  email: string;
+  email!: string;
+
+  @TimestampTZColumn({ nullable: true })
+  emailVerified?: string;
 
   @Column()
-  name: string;
+  name!: string;
 
   @PasswordColumn({ nullable: true })
   password?: string;
@@ -19,5 +23,5 @@ export class User extends BaseEntity {
     cascade: true,
   })
   @JoinTable()
-  roles?: Role[];
+  roles!: Role[];
 }
