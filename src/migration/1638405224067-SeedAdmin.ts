@@ -1,17 +1,14 @@
-
 import { RolesEnum } from 'src/common/enums/roles.enum';
 import { Role } from 'src/modules/roles/entities/role.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-
-
 const users = [
-  { 
-    name: "Admin", 
-    email: 'admin@admin.com', 
-    password: 'admin123' 
-  }
+  {
+    name: 'Admin',
+    email: 'admin@admin.com',
+    password: 'admin123',
+  },
 ];
 
 export class SeedAdmin1607716005977 implements MigrationInterface {
@@ -19,7 +16,7 @@ export class SeedAdmin1607716005977 implements MigrationInterface {
     await Promise.all(
       users.map(async (user) => {
         const UserRepo = queryRunner.connection.getRepository(User);
-       
+
         const admin = UserRepo.create({
           name: user.name,
           email: user.email,
@@ -34,8 +31,8 @@ export class SeedAdmin1607716005977 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     const UserRepo = queryRunner.connection.getRepository(User);
-    users.forEach(async user => {
+    users.forEach(async (user) => {
       await UserRepo.delete({ email: user.email });
-    })
+    });
   }
 }
