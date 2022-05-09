@@ -15,11 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: User['email']; email: string }) {
-    const user = await this.userService.findOne({ 
-      where: { id: payload.sub }, 
-      relations: ['roles'], 
+    const user = await this.userService.findOne({
+      where: { id: payload.sub },
+      relations: ['roles'],
     });
-    console.log({user})
     if (!user) {
       throw new UnauthorizedException();
     }

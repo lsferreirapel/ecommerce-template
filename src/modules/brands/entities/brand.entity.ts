@@ -8,5 +8,5 @@ export class Brand extends BaseEntity {
   name: string;
 
   @OneToMany(() => Product, (product) => product.brand, { nullable: true })
-  products: Product[]
+  products: Product[];
 }

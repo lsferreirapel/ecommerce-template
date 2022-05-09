@@ -18,7 +18,6 @@ import { JwtStrategy } from './jwt.strategy';
           expiresIn: '20h',
         },
       }),
-
     }),
   ],
   providers: [AuthResolver, AuthService, JwtStrategy],

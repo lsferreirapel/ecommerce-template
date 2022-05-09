@@ -1,7 +1,7 @@
 import {
   FilterableField,
   FilterableOffsetConnection,
-  FilterableRelation
+  FilterableRelation,
 } from '@nestjs-query/query-graphql';
 import { ObjectType } from '@nestjs/graphql';
 import { GenderEnum } from 'src/common/enums/gender.enum';

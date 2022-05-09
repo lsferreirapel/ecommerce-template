@@ -1,5 +1,6 @@
 import {
-  FilterableField, FilterableUnPagedRelation
+  FilterableField,
+  FilterableUnPagedRelation,
 } from '@nestjs-query/query-graphql';
 import { HideField, ObjectType } from '@nestjs/graphql';
 import { BaseDTO } from 'src/modules/bases/dto/base.dto';
@@ -9,10 +10,10 @@ import { RoleDTO } from 'src/modules/roles/dto/role.dto';
 @FilterableUnPagedRelation('roles', () => RoleDTO, { nullable: true })
 export class UserDTO extends BaseDTO {
   @FilterableField()
-  email: string;
+  email!: string;
 
   @FilterableField()
-  name: string;
+  name!: string;
 
   @HideField()
   password?: string;

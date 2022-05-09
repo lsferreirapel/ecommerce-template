@@ -1,6 +1,6 @@
 import {
   NestjsQueryGraphQLModule,
-  PagingStrategies
+  PagingStrategies,
 } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 import { Module } from '@nestjs/common';
@@ -29,8 +29,8 @@ import { RolesService } from './roles.service';
           },
           update: {
             one: { disabled: true },
-            many: { disabled: true }
-          }
+            many: { disabled: true },
+          },
         },
       ],
     }),

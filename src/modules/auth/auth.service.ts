@@ -58,7 +58,6 @@ export class AuthService {
     }
   }
 
-
   private async jwtToken(
     user: User,
     options?: JwtSignOptions,

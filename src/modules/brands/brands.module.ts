@@ -1,6 +1,6 @@
 import {
   NestjsQueryGraphQLModule,
-  PagingStrategies
+  PagingStrategies,
 } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 import { Module } from '@nestjs/common';
@@ -25,11 +25,11 @@ import { Brand } from './entities/brand.entity';
           pagingStrategy: PagingStrategies.OFFSET,
           decorators: [Roles(RolesEnum.ADMIN, RolesEnum.SUPER_ADMIN)],
           create: {
-            many: { disabled: true }
+            many: { disabled: true },
           },
           update: {
-            many: { disabled: true }
-          }
+            many: { disabled: true },
+          },
         },
       ],
     }),
